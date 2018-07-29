@@ -1,0 +1,19 @@
+FROM coap
+
+RUN useradd -ms /bin/bash moduleuser
+
+ENV ModuleUser=moduleuser
+
+RUN mkdir /home/gateway
+
+ADD ./gateway/ /home/gateway/
+
+WORKDIR /home/gateway/
+
+RUN cmake . \
+    && make clean \
+    && make
+    
+EXPOSE 5683/udp
+
+CMD ["/home/gateway/start_gateway.sh"]

@@ -1,0 +1,21 @@
+FROM microsoft/dotnet:2.0.0-runtime-stretch-arm32v7
+
+RUN apt-get update \
+	&& apt-get purge --yes curl \
+    && apt-get install --yes --no-install-recommends git gcc curl cmake build-essential libcurl4-openssl-dev libssl-dev uuid-dev
+
+RUN apt-get clean  \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /home/azure-iot-sdk-c
+
+# can be downloaded from github directly anyway
+ADD ./azure-iot-sdk-c/ /home/azure-iot-sdk-c/
+
+WORKDIR /home/azure-iot-sdk-c/
+
+RUN cmake -Dbuild_service_client=OFF -Dskip_samples=ON -Dbuild_provisioning_service_client=OFF . \
+    && make \
+    && make install \
+    && rm /home/azure-iot-sdk-c/ -rf	
+

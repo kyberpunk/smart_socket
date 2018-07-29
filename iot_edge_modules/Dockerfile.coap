@@ -1,0 +1,21 @@
+FROM baseimage
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends autoconf automake pkg-config libtool
+
+RUN apt-get clean  \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /home/libcoap
+
+# can be downloaded from github directly anyway
+ADD ./libcoap/ /home/libcoap/
+	
+WORKDIR /home/libcoap/
+RUN ./autogen.sh --clean \
+	&& ./autogen.sh \
+	&& ./configure --disable-examples --disable-documentation --disable-dtls \
+	&& make clean \
+	&& make \
+    && make install \
+    && rm /home/libcoap/ -rf
